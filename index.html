@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vellum AI — портфолио</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0d0b0a;
+            color: #e8ddd4;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ─── Animated background ─── */
+        .bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .bg-canvas .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            animation: orbFloat 16s ease-in-out infinite alternate;
+        }
+        .bg-canvas .orb:nth-child(1) {
+            width: 600px; height: 600px;
+            background: #a67c5b;
+            top: -10%; left: -10%;
+            animation-duration: 18s;
+        }
+        .bg-canvas .orb:nth-child(2) {
+            width: 500px; height: 500px;
+            background: #6b4f3a;
+            bottom: -10%; right: -10%;
+            animation-duration: 22s;
+            animation-delay: -4s;
+        }
+        .bg-canvas .orb:nth-child(3) {
+            width: 400px; height: 400px;
+            background: #c4956a;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-duration: 20s;
+            animation-delay: -8s;
+        }
+        @keyframes orbFloat {
+            0%   { transform: translate(0, 0) scale(1); }
+            33%  { transform: translate(60px, -80px) scale(1.1); }
+            66%  { transform: translate(-40px, 60px) scale(0.9); }
+            100% { transform: translate(30px, -30px) scale(1.05); }
+        }
+
+        /* ─── Scroll reveal ─── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        /* ─── Nav ─── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 0;
+            z-index: 100;
+            transition: background 0.4s, backdrop-filter 0.4s;
+        }
+        nav.scrolled {
+            background: rgba(13, 11, 10, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        nav .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #e8ddd4;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .nav-logo span { color: #c4956a; }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a {
+            color: #a09080;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 2px;
+            background: #c4956a;
+            transition: width 0.3s;
+        }
+        .nav-links a:hover { color: #e8ddd4; }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* ─── Hero ─── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 0 80px;
+            position: relative;
+        }
+        .hero-content { max-width: 800px; }
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(166, 124, 91, 0.15);
+            color: #c4956a;
+            border: 1px solid rgba(166, 124, 91, 0.25);
+            margin-bottom: 32px;
+        }
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, #c4956a, #e8c9b0, #a67c5b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .tagline {
+            font-size: 1.5rem;
+            color: #a09080;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+        .hero .usp {
+            font-size: 1.1rem;
+            color: #b0a090;
+            max-width: 600px;
+            margin: 0 auto 48px;
+            padding: 20px 28px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(8px);
+        }
+
+        /* ─── Buttons ─── */
+        .btn-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 40px;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #a67c5b, #c4956a);
+            color: #0d0b0a;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(166, 124, 91, 0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #c4956a;
+            border: 1.5px solid rgba(196, 149, 106, 0.4);
+        }
+        .btn-outline:hover {
+            background: rgba(196, 149, 106, 0.1);
+            border-color: #c4956a;
+            transform: translateY(-3px);
+        }
+        .btn-shine::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -75%;
+            width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s;
+        }
+        .btn-shine:hover::before { left: 125%; }
+
+        /* ─── Sections ─── */
+        section { padding: 100px 0; }
+        .section-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #e8ddd4;
+        }
+        .section-title span { color: #c4956a; }
+
+        /* ─── About ─── */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .about-text p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #b0a090;
+        }
+        .about-text p strong { color: #e8ddd4; }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 32px 16px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            transition: transform 0.4s, border-color 0.4s;
+        }
+        .stat-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(196, 149, 106, 0.3);
+        }
+        .stat-card .number {
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c4956a, #e8c9b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: #8a7a6e;
+            margin-top: 6px;
+        }
+
+        /* ─── Services ─── */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .service-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 40px 32px;
+            border-radius: 24px;
+            backdrop-filter: blur(8px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(166,124,91,0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .service-card:hover::before { opacity: 1; }
+        .service-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(196, 149, 106, 0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .service-card .icon {
+            font-size: 2.4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .service-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #e8ddd4;
+        }
+        .service-card p {
+            color: #8a7a6e;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ─── Portfolio ─── */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+        }
+        .portfolio-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .portfolio-item:hover {
+            transform: translateY(-8px);
+            border-color: rgba(196, 149, 106, 0.25);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .portfolio-item video {
+            width: 100%;
+            display: block;
+            cursor: pointer;
+            background: #1a1512;
+        }
+        .portfolio-item .info {
+            padding: 24px 28px;
+        }
+        .portfolio-item .info h3 {
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+            color: #e8ddd4;
+        }
+        .portfolio-item .info p {
+            color: #8a7a6e;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        .portfolio-item .info .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .portfolio-item .info .tags span {
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(166, 124, 91, 0.12);
+            color: #c4956a;
+            border: 1px solid rgba(166, 124, 91, 0.15);
+        }
+
+        /* ─── Tools ─── */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+        .tool-chip {
+            padding: 18px 16px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #b0a090;
+        }
+        .tool-chip:hover {
+            transform: scale(1.06);
+            background: rgba(166, 124, 91, 0.1);
+            border-color: rgba(196, 149, 106, 0.3);
+            color: #e8ddd4;
+        }
+
+        /* ─── Contact ─── */
+        .contact-box {
+            max-width: 520px;
+            margin: 0 auto;
+            text-align: center;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 56px 48px;
+            border-radius: 32px;
+            backdrop-filter: blur(12px);
+        }
+        .contact-box p {
+            color: #b0a090;
+            margin-bottom: 36px;
+            font-size: 1.05rem;
+        }
+
+        /* ─── Footer ─── */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            color: #5a4a3e;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        /* ─── Mobile ─── */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.6rem; }
+            .hero .tagline { font-size: 1.1rem; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .about-stats { grid-template-columns: repeat(3, 1fr); }
+            .services-grid { grid-template-columns: 1fr; }
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .contact-box { padding: 36px 24px; }
+            .nav-links { display: none; }
+            section { padding: 60px 0; }
+            .section-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated background -->
+    <div class="bg-canvas">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- Nav -->
+    <nav id="nav">
+        <div class="container">
+            <a href="#" class="nav-logo">Vellum<span>AI</span></a>
+            <ul class="nav-links">
+                <li><a href="#about">Обо мне</a></li>
+                <li><a href="#services">Услуги</a></li>
+                <li><a href="#portfolio">Проекты</a></li>
+                <li><a href="#tools">Инструменты</a></li>
+                <li><a href="#contact">Контакты</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="container hero-content">
+            <div class="hero-badge reveal">AI-креатор видео</div>
+            <h1 class="reveal reveal-delay-1">
+                Vellum <span class="gradient">AI</span>
+            </h1>
+            <p class="tagline reveal reveal-delay-2">Тёплый AI-креатив, который запоминается</p>
+            <div class="usp reveal reveal-delay-3">
+                Создаю тёплый, тактильно-живой AI-контент,<br>
+                который не выглядит как бездушная генерация
+            </div>
+            <div class="btn-group reveal reveal-delay-4">
+                <a href="#portfolio" class="btn btn-primary btn-shine">Смотреть работы</a>
+                <a href="#contact" class="btn btn-outline">Связаться</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title reveal">Привет, я <span>Vellum</span></h2>
+            <div class="about-grid">
+                <div class="about-text reveal">
+                    <p>
+                        Я создаю видео на стыке AI-технологий и человеческого вкуса.
+                        Специализируюсь на рекламных и образовательных роликах — от идеи до финального монтажа.
+                    </p>
+                    <p>
+                        Мой подход: никакой «пластиковой» генерации. Каждый кадр проходит
+                        ручную обработку, цветокоррекцию и звуковой дизайн, чтобы выглядеть
+                        дорого, тактильно и живо.
+                    </p>
+                    <p>
+                        <strong>Ключевой проект:</strong> промо-ролик для Университета Зерокодер
+                        в уникальном вязаном стиле — полностью создан с помощью AI.
+                    </p>
+                </div>
+                <div class="about-stats reveal reveal-delay-2">
+                    <div class="stat-card">
+                        <div class="number">3+</div>
+                        <div class="label">года опыта</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">10</div>
+                        <div class="label">AI-инструментов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">∞</div>
+                        <div class="label">идей в работе</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services">
+        <div class="container">
+            <h2 class="section-title reveal">Что я <span>делаю</span></h2>
+            <div class="services-grid">
+                <div class="service-card reveal reveal-delay-1">
+                    <span class="icon">🎬</span>
+                    <h3>Рекламные ролики</h3>
+                    <p>AI-видео для брендов, стартапов и продуктов. Короткий формат, высокий retention, уникальный визуал.</p>
+                </div>
+                <div class="service-card reveal reveal-delay-2">
+                    <span class="icon">📚</span>
+                    <h3>Образовательный контент</h3>
+                    <p>Видеолекции, промо курсов, анимационные объяснения — для edtech-проектов и онлайн-школ.</p>
+                </div>
+                <div class="service-card reveal reveal-delay-3">
+                    <span class="icon">✨</span>
+                    <h3>Полный цикл продакшна</h3>
+                    <p>Сценарий → генерация → монтаж → озвучка → цветокоррекция. Всё в одних руках и в едином стиле.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio -->
+    <section id="portfolio">
+        <div class="container">
+            <h2 class="section-title reveal">Избранные <span>проекты</span></h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item reveal">
+                    <video src="Video/202606141920.mp4" muted loop playsinline preload="metadata"></video>
+                    <div class="info">
+                        <h3>Промо-ролик</h3>
+                        <p>AI-генерация + монтаж</p>
+                        <div class="tags"><span>Реклама</span><span>AI video</span></div>
+                    </div>
+                </div>
+                <div class="portfolio-item reveal reveal-delay-1">
+                    <video src="https://raw.githubusercontent.com/ZerocoderForstudents/vellum-ai-portfolio/master/Video/kling_20260218_Motion_Control____________5717_0.mp4" muted loop playsinline preload="metadata"></video>
+                    <div class="info">
+                        <h3>Motion Control</h3>
+                        <p>Анимация с Kling AI</p>
+                        <div class="tags"><span>Motion</span><span>AI</span></div>
+                    </div>
+                </div>
+                <div class="portfolio-item reveal reveal-delay-2">
+                    <video src="Video/Университет_Зерокодер_with_captions.mp4" muted loop playsinline preload="metadata"></video>
+                    <div class="info">
+                        <h3>Университет Зерокодер</h3>
+                        <p>Промо в вязаном стиле</p>
+                        <div class="tags"><span>Edtech</span><span>Креатив</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools -->
+    <section id="tools">
+        <div class="container">
+            <h2 class="section-title reveal">Инструменты, которые я <span>использую</span></h2>
+            <div class="tools-grid reveal">
+                <div class="tool-chip">🎞️ Sora</div>
+                <div class="tool-chip">🎞️ Runway</div>
+                <div class="tool-chip">🎞️ Pika</div>
+                <div class="tool-chip">🖼️ Midjourney</div>
+                <div class="tool-chip">🖼️ DALL·E</div>
+                <div class="tool-chip">🤖 ChatGPT</div>
+                <div class="tool-chip">🤖 Claude</div>
+                <div class="tool-chip">🎙️ ElevenLabs</div>
+                <div class="tool-chip">✂️ CapCut</div>
+                <div class="tool-chip">✂️ Premiere Pro</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title reveal">Давайте <span>создадим</span> что-то тёплое</h2>
+            <div class="contact-box reveal">
+                <p>
+                    Если тебе нужен AI-креатив, который не выглядит как AI —<br>
+                    пиши, обсудим твой проект
+                </p>
+                <p style="font-weight:600; color:#e8ddd4; margin-bottom:8px;">Vellum AI</p>
+                <p style="color:#6b5b4e; font-size:0.9rem;">✉️ сюда добавить почту</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            © 2026 Vellum AI — тёплый AI-креатив
+        </div>
+    </footer>
+
+    <script>
+        // ─── Scroll reveal ───
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // ─── Nav background on scroll ───
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 80);
+        });
+
+        // ─── Video play on hover ───
+        document.querySelectorAll('.portfolio-item video').forEach(video => {
+            video.addEventListener('mouseenter', () => video.play());
+            video.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+            // click to toggle sound
+            video.addEventListener('click', () => { video.muted = !video.muted; });
+        });
+    </script>
+
+</body>
+</html>
